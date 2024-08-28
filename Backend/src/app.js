@@ -7,14 +7,14 @@ import cookieParser from 'cookie-parser'
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import setupSocketHandlers from './socket.js';
-
+import config from './config/config.js'
 
 const app = express();
 const server = createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: config.BASE_URL,
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -29,7 +29,7 @@ app.use(morgan('dev'))
 
   
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: config.BASE_URL,
     credentials: true
 }))
 
