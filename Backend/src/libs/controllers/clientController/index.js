@@ -27,6 +27,8 @@ import transactionController from "./transactionController.js";
 import alltransactionController from "./alltransactionController.js";
 import browseSubmittedController from "./browseSubmittedController.js";
 import acceptJobSubmitController from "./acceptJobSubmitController.js";
+import ratingController from "./ratingController.js";
+import wallettransactionController from "./wallettransactionController.js";
 
 export default (dependencies) => {
     return {
@@ -58,6 +60,8 @@ export default (dependencies) => {
         transactionController:transactionController(dependencies),
         alltransactionController:alltransactionController(dependencies),
         browseSubmittedController:browseSubmittedController(dependencies),
-        acceptJobSubmitController:acceptJobSubmitController(dependencies)
+        acceptJobSubmitController:acceptJobSubmitController(dependencies),
+        ratingController:ratingController(dependencies),
+        wallettransactionController:wallettransactionController(dependencies)
     }
 }

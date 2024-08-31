@@ -11,7 +11,7 @@ const transactionSchema = mongoose.Schema({
           'Payment received',
           'Withdrawal',
           'Transfer from another wallet',
-          'convinience Fee'
+          'convenience fee'
           
         ],
       },

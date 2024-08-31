@@ -34,7 +34,9 @@ export default (dependencies) => {
     transactionController,
     alltransactionController,
     browseSubmittedController,
-    acceptJobSubmitController
+    acceptJobSubmitController,
+    ratingController,
+    wallettransactionController
   } = clientController(dependencies);
 
   const { createChatcontroller , getChatController ,findchatController , messageController , getmessageController,addImageMessageController,unReadmessagesController,markAsReadController } = chatController(dependencies)
@@ -70,6 +72,7 @@ export default (dependencies) => {
   router.get('/transaction',verifyToken,requireRole('client'), transactionController)
   router.get('/alltransaction',verifyToken,requireRole('client'), alltransactionController)
   router.get('/browseSubmitted',verifyToken,requireRole('client'), browseSubmittedController)
+  router.get('/wallettransaction',verifyToken,requireRole('client'), wallettransactionController)
 
   router.post('/acceptJobSubmit', verifyToken, requireRole('client'), acceptJobSubmitController)
 
@@ -79,6 +82,7 @@ export default (dependencies) => {
   router.post('/addclientmessage',verifyToken ,requireRole('client'),messageController)
   router.get('/clientunReadmessages',verifyToken ,requireRole('client'),unReadmessagesController)
   router.put('/clientmarkAsRead',verifyToken ,requireRole('client'),markAsReadController)
+  router.post('/rating',verifyToken ,requireRole('client'),ratingController)
 
   router.post('/addImagemessages', uploadFile.single("image"), verifyToken, requireRole('client'), addImageMessageController)
   router.post('/addAudiomessages', uploadFile.single("audio"), verifyToken, requireRole('client'), addImageMessageController)

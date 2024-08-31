@@ -62,7 +62,9 @@ import {
   transactionUsecase,
   alltransactionUsecase,
   browseSubmittedUsecase,
-  acceptJobSubmitUsecase
+  acceptJobSubmitUsecase,
+  cllientratingUsecase,
+  wallettransactionUsecase
 
 } from "./clients/index.js";
 
@@ -127,6 +129,7 @@ export {
   editImageUsecase,
   quitContractActionUsecase,
   ratingUsecase,
+
   /*client*/
   submittedContractUseCase,
   clientAuthUsecase,
@@ -157,6 +160,9 @@ export {
   alltransactionUsecase,
   browseSubmittedUsecase,
   acceptJobSubmitUsecase,
+  cllientratingUsecase,
+  wallettransactionUsecase,
+
   /*login*/
   loginUsecase,
   forgotPasswordUseCase,

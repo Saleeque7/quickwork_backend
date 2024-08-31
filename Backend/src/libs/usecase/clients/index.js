@@ -27,7 +27,8 @@ import { transactionUsecase } from "./transactionUsecase.js";
 import { alltransactionUsecase } from "./alltransactionUsecase.js";
 import { browseSubmittedUsecase } from "./browseSubmittedUsecase.js";
 import { acceptJobSubmitUsecase } from "./acceptJobSubmitUsecase.js";
-
+import { cllientratingUsecase } from "./cllientratingUsecase.js";
+import { wallettransactionUsecase } from "./wallettransactionUsecase.js";
 
 export {
   clientAuthUsecase,
@@ -58,6 +59,8 @@ export {
   transactionUsecase,
   alltransactionUsecase,
   browseSubmittedUsecase,
-  acceptJobSubmitUsecase
+  acceptJobSubmitUsecase,
+  cllientratingUsecase,
+  wallettransactionUsecase
 
 } 

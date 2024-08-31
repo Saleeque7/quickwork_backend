@@ -10,7 +10,7 @@ export default (dependencies) => {
             if(!result){
                 return res.status(400).json({message:"error in acceptJobSubmitController"})
             }
-            return res.status(200).json(result)
+            return res.status(200).json({userId:result.userId ,jobId:result.jobId})
         } catch (error) {
             console.error(error,"error in acceptJobSubmitController");
             

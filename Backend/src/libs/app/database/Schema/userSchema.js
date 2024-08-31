@@ -2,40 +2,34 @@ import mongoose from "mongoose";
 import { experienceSchema } from "./experienceSchema.js";
 
 // Transaction Schema
-const transactionSchema = new mongoose.Schema(
+const walletTransactionSchema = new mongoose.Schema(
   {
     amount: {
       type: Number,
+      required: true,
     },
     source: {
       type: String,
-      required: true,
       enum: [
-        'Payment received',
-        'Refund received',
+        'Contract Payment',
         'Withdrawal',
-      
-      ], 
+      ],
     },
     contractId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Contract',  
+      ref: 'Contract',
+      required: true,
     },
     status: {
       type: String,
       enum: ['credit', 'debit'],
       default: 'credit',
-  },
-    createdAt: {
-      type: Date,
-      default: Date.now,
     },
   },
   {
     timestamps: true,
   }
 );
-
 
 const walletSchema = new mongoose.Schema(
   {
@@ -43,15 +37,14 @@ const walletSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    transactions: [transactionSchema],
+    Wallettransactions: [walletTransactionSchema],
   },
   {
     _id: false,
-  },
-  {
     timestamps: true,
   }
 );
+
 
 const notificationSchema = new mongoose.Schema(
   {
@@ -144,6 +137,40 @@ const applicationSchema = new mongoose.Schema(
     timestamps: true,
   }
  
+);
+
+
+const ratingSchema = new mongoose.Schema(
+  {
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+      required: true,
+    },
+    comment: {
+      type: String,
+      trim: true,
+    },
+    jobId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'JobPost', 
+      required: true,
+    },
+    reviewer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Client',
+      required: true,
+    },
+    contractTitle: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
 // User Schema
@@ -240,7 +267,8 @@ const userSchema = new mongoose.Schema(
     experiences: [experienceSchema],
     applications: [applicationSchema],
     notifications: [notificationSchema], 
-    wallet: walletSchema,  
+    wallet: walletSchema, 
+    ratings: [ratingSchema], 
   },
   {
     timestamps: true,

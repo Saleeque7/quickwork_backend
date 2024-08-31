@@ -11,7 +11,9 @@ const transactionSchema = new mongoose.Schema(
        
         enum: [
             'Payment received',
-            'Issue Refund',      
+            'Issue Refund',
+            'contract Payment' , 
+            'convinience fee '   
           ], 
       },
     contractId: {

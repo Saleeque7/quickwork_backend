@@ -664,6 +664,47 @@ alltransactions:async(clientId, searchQuery, skip, limit)=>{
     throw error;
   }
 },
+wallettransactions:async(clientId, searchQuery, skip, limit)=>{
+  try {
+ 
+    const client = await Client.findById(clientId)
+      .select('wallet.Wallettransactions wallet.balance')
+      .exec();
+
+
+    if (!client || !client.wallet) {
+      throw new Error('Client or wallet not found');
+    }
+    const balance = client.wallet.balance;
+ 
+    let filteredTransactions = client.wallet.Wallettransactions.filter(transaction => {
+      let matches = true;
+      if (searchQuery.source) {
+        matches = matches && transaction.source === searchQuery.source;
+      }
+      if (searchQuery.status) {
+        matches = matches && transaction.status === searchQuery.status;
+      }
+      return matches;
+    });
+
+   
+    console.log(balance,"dsds");
+    
+   
+    const paginatedTransactions = filteredTransactions.slice(skip, skip + limit);
+
+    return {
+      transactions: paginatedTransactions,
+      totalCount: filteredTransactions.length,
+      balance:balance
+    };
+  } catch (error) {
+
+    console.error('Error fetching wallet transactions:', error);
+    throw new Error('An error occurred while fetching wallet transactions.');
+  }
+},
 browseSubmitted: async (id) => {
   try {
     const result = await JobSubmission.findById(id)
@@ -676,15 +717,128 @@ browseSubmitted: async (id) => {
     console.error("Error in browseSubmitted:", error);
     throw new Error("Error in repository while fetching submitted job");
   }
-},acceptJobSubmit:async(data,clientId) => {
+},
+ acceptJobSubmit : async (data, clientId) => {
+  const session = await mongoose.startSession(); 
+  session.startTransaction();
+
   try {
-    const { contractId , jobId , userId , jobsubmission} = data
-    const contract = await Contract.findById(contractId)
-    console.log(contract);
-    
+    const { contractId, jobId, userId, jobsubmission } = data;
+
+    // Update contract
+    const contract = await Contract.findById(contractId).session(session);
+    if (!contract) throw new Error('Contract not found');
+    contract.contractStatus = 'completed';
+    contract.clientSide.status = 'completed';
+    await contract.save();
+
+    // Update job submission
+    const jobSub = await JobSubmission.findById(jobsubmission).session(session);
+    if (!jobSub) throw new Error('Job submission not found');
+    jobSub.status = 'accept';
+    await jobSub.save();
+
+    // Update QbWallet
+    const qbWallet = await QbWallet.findById(contract.QwId).session(session);
+    if (!qbWallet) throw new Error('QbWallet not found');
+    const transaction = qbWallet.transactions.find(
+      (txn) => txn.contractId.toString() === contractId
+    );
+    if (!transaction) throw new Error('Transaction not found in QbWallet');
+
+    qbWallet.balance -= transaction.amount;
+    qbWallet.transactions.push({
+      amount: transaction.amount,
+      source: 'contract Payment',
+      contractId: contractId,
+      status: 'debit',
+    });
+    const adminWallet = Math.floor(transaction.amount * 0.1);
+    await qbWallet.save();
+
+    // Update User Wallet
+    const user = await User.findById(userId).session(session);
+    if (!user) throw new Error('User not found');
+    if (!user.wallet) {
+      user.wallet = { balance: 0, Wallettransactions: [] };
+    }
+    user.wallet.balance += transaction.amount;
+    user.wallet.Wallettransactions.push({
+      amount: transaction.amount,
+      source: 'Contract Payment',
+      contractId: contractId,
+      status: 'credit',
+    });
+    user.totalEarnings += transaction.amount;
+    await user.save();
+
+    // Update Admin Wallet
+    const admin = await Admin.findOne().session(session);
+    if (!admin) throw new Error('Admin not found');
+    if (!admin.wallet) {
+      admin.wallet = { balance: 0, transactions: [] };
+    }
+    if (isNaN(admin.wallet.balance)) {
+      admin.wallet.balance = 0;
+    }
+    admin.wallet.balance += adminWallet;
+    admin.wallet.transactions.push({
+      amount: adminWallet,
+      source: 'convenience fee',
+      contractId: contractId,
+      status: 'credit',
+    });
+    await admin.save();
+
+    // Update Job Post
+    const jobPost = await JobPost.findById(jobId).session(session);
+    if (!jobPost) throw new Error('Job post not found');
+    await JobPost.updateOne(
+      { _id: jobId },
+      {
+        $set: {
+          status: 'completed',
+          proposals: []
+        }
+      }
+    );
+
+    await session.commitTransaction(); // Commit the transaction
+    session.endSession();
+
+    return {
+      userId:user._id,
+      jobId
+    }
   } catch (error) {
-    console.error(error,"error in acceptJobSubmit");
-    
+    console.error(error, 'Error in acceptJobSubmit');
+    await session.abortTransaction(); // Abort the transaction in case of error
+    session.endSession();
+  }
+},
+rating: async (data,client) => {
+  try {
+      const {rating , comment , jobId , userId } = data
+
+      const job  = await JobPost.findById(jobId)
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error('user not found');
+      }
+      const ratingData = {
+          rating,
+          comment,
+          jobId,
+          reviewer: client,
+          contractTitle: job.jobRole,
+      }
+
+      user.ratings.push(ratingData);
+      await user.save();
+   return user
+  } catch (error) {
+      console.error(error);
+      throw error;
   }
 }
 

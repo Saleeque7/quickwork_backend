@@ -65,6 +65,8 @@ import {
   transactionUsecase,
   alltransactionUsecase,
   acceptJobSubmitUsecase,
+  cllientratingUsecase,
+  wallettransactionUsecase,
 
   /*login*/
   loginUsecase,
@@ -167,6 +169,9 @@ const use_case = {
   transactionUsecase,
   alltransactionUsecase,
   acceptJobSubmitUsecase,
+  cllientratingUsecase,
+  wallettransactionUsecase,
+  
   /*login*/
   loginUsecase,
   forgotPasswordUseCase,

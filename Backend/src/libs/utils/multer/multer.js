@@ -120,6 +120,6 @@ export const uploadFile = multer({
     sanitizeFiles(file, callback);
   },
   limits: {
-    fileSize: 1024 * 1024 * 50 
+    fileSize: 1024 * 1024 * 100 
   }
 });
