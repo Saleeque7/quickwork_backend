@@ -19,6 +19,7 @@ export default {
     RAZORPAY_SECRET_KEY:process.env.RAZORPAY_SECRET_KEY,
     STRIPE_SECRET_KEY:process.env.STRIPE_SECRET_KEY,
     BASE_URL:process.env.BASE_URL
+    
 }
 
 

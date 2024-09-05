@@ -666,7 +666,7 @@ alltransactions:async(clientId, searchQuery, skip, limit)=>{
 },
 wallettransactions:async(clientId, searchQuery, skip, limit)=>{
   try {
- 
+    console.log(clientId,"clientId");
     const client = await Client.findById(clientId)
       .select('wallet.Wallettransactions wallet.balance')
       .exec();
@@ -803,7 +803,7 @@ browseSubmitted: async (id) => {
       }
     );
 
-    await session.commitTransaction(); // Commit the transaction
+    await session.commitTransaction();
     session.endSession();
 
     return {
@@ -812,7 +812,7 @@ browseSubmitted: async (id) => {
     }
   } catch (error) {
     console.error(error, 'Error in acceptJobSubmit');
-    await session.abortTransaction(); // Abort the transaction in case of error
+    await session.abortTransaction(); 
     session.endSession();
   }
 },
