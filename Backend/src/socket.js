@@ -26,7 +26,7 @@ export default function setupSocketHandlers(io) {
     socket.on('typing', ({ userId }) => {
       console.log("User typing:", userId);
 
-      // Find all active users except the sender
+   
       activeUsers.forEach(user => {
         if (user.userId !== userId) {
           io.to(user.socketId).emit('typing', { userId });
@@ -43,6 +43,21 @@ export default function setupSocketHandlers(io) {
           io.to(user.socketId).emit('stop-typing', { userId });
         }
       });
+    });
+    socket.on("call-user", (data) => {
+      console.log(data,"data");
+      
+      const { name ,receiverId, senderId, roomId } = data;
+      console.log(`call from room id ${senderId} in  ${roomId} to ${receiverId}`);
+      const user = activeUsers.find((user) => user.userId === receiverId);
+
+      if (user) {
+        io.to(user.socketId).emit("incoming-call", {
+          senderId,
+          roomId,
+          name
+        });
+      }
     });
 
 
